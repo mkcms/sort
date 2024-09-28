@@ -39,10 +39,40 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="7" column="0">
-        <widget class="QLabel" name="labelDelay">
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="spinBoxNumItems">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>1000</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0" colspan="2">
+        <widget class="QDial" name="dialDelay">
+         <property name="maximum">
+          <number>30000</number>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0" colspan="2">
+        <widget class="QLabel" name="labelAlgorithm">
          <property name="text">
-          <string>Delay (microseconds):</string>
+          <string>Algorithm:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QLabel" name="labelDelayValue">
+         <property name="text">
+          <string>0us</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -59,10 +89,13 @@
          </property>
         </spacer>
        </item>
-       <item row="9" column="1">
-        <widget class="QPushButton" name="pushButtonReset">
-         <property name="text">
-          <string>Reset</string>
+       <item row="6" column="0" colspan="2">
+        <widget class="QListWidget" name="listWidgetAlgorithms">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
         </widget>
        </item>
@@ -88,53 +121,23 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0" colspan="2">
-        <widget class="QLabel" name="labelAlgorithm">
+       <item row="7" column="0">
+        <widget class="QLabel" name="labelDelay">
          <property name="text">
-          <string>Algorithm:</string>
+          <string>Delay (microseconds):</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QSpinBox" name="spinBoxNumItems">
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>1000</number>
-         </property>
-         <property name="value">
-          <number>100</number>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="labelNumItems">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>No. items</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0" colspan="2">
-        <widget class="QListWidget" name="listWidgetAlgorithms">
+       <item row="4" column="0" colspan="2">
+        <widget class="QListWidget" name="listWidgetItemOrder">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="2">
-        <widget class="QLabel" name="labelItemOrder">
-         <property name="text">
-          <string>Initial order:</string>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarAsNeeded</enum>
          </property>
         </widget>
        </item>
@@ -168,34 +171,80 @@
          </layout>
         </widget>
        </item>
-       <item row="4" column="0" colspan="2">
-        <widget class="QListWidget" name="listWidgetItemOrder">
+       <item row="0" column="0">
+        <widget class="QLabel" name="labelNumItems">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="verticalScrollBarPolicy">
-          <enum>Qt::ScrollBarAsNeeded</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0" colspan="2">
-        <widget class="QDial" name="dialDelay">
-         <property name="maximum">
-          <number>30000</number>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QLabel" name="labelDelayValue">
          <property name="text">
-          <string>0us</string>
+          <string>No. items</string>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </widget>
+       </item>
+       <item row="9" column="1">
+        <widget class="QPushButton" name="pushButtonReset">
+         <property name="text">
+          <string>Reset</string>
          </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QLabel" name="labelItemOrder">
+         <property name="text">
+          <string>Initial order:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBoxStats">
+         <property name="title">
+          <string>Stats</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QLabel" name="labelAccesses">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Accesses:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="labelComparisons">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Comparisons:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="labelAccessesValue">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="labelComparisonsValue">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>

@@ -31,6 +31,7 @@ class MainWindow : public QMainWindow {
     void onResetClicked();
 
     void onRunStateChanged(Run::State);
+    void onStats(Run::Stats);
 
   private:
     Ui_MainWindow *m_ui;

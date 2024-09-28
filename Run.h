@@ -14,6 +14,11 @@
 class Run : public QObject {
     Q_OBJECT
   public:
+    struct Stats {
+        int accesses = 0;
+        int comparisons = 0;
+    };
+
     Run(std::vector<SortItem> &vec, std::chrono::microseconds delay,
         QObject *parent = nullptr);
 
@@ -39,6 +44,7 @@ class Run : public QObject {
   signals:
     void stateChanged(Run::State);
     void sceneChangesReady(SceneChanges &);
+    void statsReady(Run::Stats);
 
   protected:
     void timerEvent(QTimerEvent *) override;
@@ -62,6 +68,7 @@ class Run : public QObject {
         bool pauseRequested;
         std::chrono::microseconds delay;
         SceneChanges sceneChanges;
+        Stats stats;
     } shared;
 };
 

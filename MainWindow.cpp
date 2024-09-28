@@ -86,8 +86,11 @@ void MainWindow::setup() {
             SLOT(onRunStateChanged(Run::State)));
     connect(m_run, SIGNAL(sceneChangesReady(SceneChanges &)), scene,
             SLOT(applyChanges(SceneChanges &)));
+    connect(m_run, SIGNAL(statsReady(Run::Stats)), this,
+            SLOT(onStats(Run::Stats)));
 
     onRunStateChanged(Run::State::NotStarted);
+    onStats(Run::Stats{});
     m_params.needsRegenerate = false;
 }
 
@@ -148,4 +151,9 @@ void MainWindow::onRunStateChanged(Run::State state) {
         m_ui->pushButtonResume->hide();
         break;
     }
+}
+
+void MainWindow::onStats(Run::Stats stats) {
+    m_ui->labelAccessesValue->setNum(stats.accesses);
+    m_ui->labelComparisonsValue->setNum(stats.comparisons);
 }

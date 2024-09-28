@@ -20,6 +20,8 @@ class Run::Callbacks : public SortItemCallbacks {
         if (rhs.graphicsItem()) {
             m_run.shared.sceneChanges.addAccess(rhs.mutableGraphicsItem());
         }
+        m_run.shared.stats.comparisons++;
+        m_run.shared.stats.accesses += 2;
     }
 
     void onAccess(const SortItem &item) override {
@@ -29,6 +31,8 @@ class Run::Callbacks : public SortItemCallbacks {
         if (item.graphicsItem()) {
             m_run.shared.sceneChanges.addAccess(item.mutableGraphicsItem());
         }
+
+        m_run.shared.stats.accesses++;
     }
 
     void onAssignment(const SortItem &item, int /*oldValue*/, int newValue,
@@ -72,7 +76,7 @@ Run::Run(std::vector<SortItem> &vec, std::chrono::microseconds delay,
          QObject *parent)
     : QObject(parent), m_vector(vec), m_state(State::NotStarted), m_timer(-1),
       m_callbacks(nullptr), m_thread(nullptr),
-      shared{{}, false, false, delay, {static_cast<int>(vec.size())}} {}
+      shared{{}, false, false, delay, {static_cast<int>(vec.size())}, Stats{}} {}
 
 Run::~Run() {
     if (m_state != State::Finished && m_state != State::NotStarted) {
@@ -194,6 +198,7 @@ void Run::timerEvent(QTimerEvent *) { maybeDrainChanges(); }
 
 void Run::maybeDrainChanges(bool force) {
     std::optional<SceneChanges> changes;
+    Stats stats;
 
     {
         QMutexLocker<QMutex> lock(&shared.mutex);
@@ -203,7 +208,9 @@ void Run::maybeDrainChanges(bool force) {
         auto size = shared.sceneChanges.numItemsInVector();
         changes = std::move(shared.sceneChanges);
         shared.sceneChanges = SceneChanges(size);
+        stats = shared.stats;
     }
 
     emit sceneChangesReady(*changes);
+    emit statsReady(stats);
 }
