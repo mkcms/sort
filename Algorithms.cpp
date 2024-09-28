@@ -61,6 +61,23 @@ void StdSortHeap(std::vector<SortItem> &vec) {
     std::sort_heap(vec.begin(), vec.end());
 }
 
+void ShellSort(std::vector<SortItem> &vec) {
+    unsigned int gaps[] = {
+        929, 505, 209, 109, 41, 19, 5, 1,
+    };
+
+    for (auto gap : gaps) {
+        for (unsigned int i = gap; i < vec.size(); i++) {
+            auto temp = vec[i];
+            unsigned int j;
+            for (j = i; (j >= gap) && vec[j - gap] > temp; j -= gap) {
+                vec[j] = vec[j - gap];
+            }
+            vec[j] = temp;
+        }
+    }
+}
+
 void InsertionSort(std::vector<SortItem> &vec) {
     for (unsigned i = 1; i < vec.size(); i++) {
         int j = i;
@@ -211,6 +228,7 @@ const QVector<Algorithm> &GetAlgorithms() {
         {.name = "std::sort", .function = StdSort},
         {.name = "std::stable_sort", .function = StdStableSort},
         {.name = "std::sort_heap", .function = StdSortHeap},
+        {.name = "ShellSort", .function = ShellSort},
         {.name = "InsertionSort", .function = InsertionSort},
         {.name = "SelectionSort", .function = SelectionSort},
         {.name = "BubbleSort", .function = BubbleSort},
