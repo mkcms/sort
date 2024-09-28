@@ -17,18 +17,18 @@ find_package(
 
 qt_add_executable(
   unnamed
-  Algorithms.cpp
-  Graphics.cpp
-  MainWindow.cpp
-  MainWindow.ui
-  Run.cpp
-  SortItem.cpp
-  main.cpp
+  src/Algorithms.cpp
+  src/Graphics.cpp
+  src/MainWindow.cpp
+  src/MainWindow.ui
+  src/Run.cpp
+  src/SortItem.cpp
+  src/main.cpp
 )
 
 target_link_libraries(unnamed PUBLIC Qt::Widgets)
 
-target_include_directories(unnamed PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(unnamed PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 check_cxx_compiler_flag("-Wall" FLAG_WALL_SUPPORTED)
 check_cxx_compiler_flag("-Werror" FLAG_WERROR_SUPPORTED)
