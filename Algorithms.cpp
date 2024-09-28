@@ -4,6 +4,7 @@
 
 template <typename It, typename MergeFn>
 static void mergeSortImpl(It begin, It end, MergeFn mergeFn);
+template <typename It> static void merge(const It, const It, const It);
 
 template <typename It> static void quickSortImpl(It begin, It end);
 
@@ -35,6 +36,18 @@ void MergeSortStdMerge(std::vector<SortItem> &vec) {
                           *first++ = v;
                       }
                   });
+}
+
+void BottomUpMergeSort(std::vector<SortItem> &vec) {
+    for (unsigned int i = 1; i < vec.size(); i *= 2) {
+        for (auto j = vec.begin(); j < vec.end();) {
+            auto first = j;
+            auto middle = std::min(j + i, vec.end());
+            auto last = std::min(middle + i, vec.end());
+            j = last;
+            merge(first, middle, last);
+        }
+    }
 }
 
 void StdSort(std::vector<SortItem> &vec) { std::sort(vec.begin(), vec.end()); }
@@ -194,6 +207,7 @@ const QVector<Algorithm> &GetAlgorithms() {
         {.name = "MergeSort (std::inplace_merge)",
          .function = MergeSortStdInplaceMerge},
         {.name = "MergeSort (std::merge)", .function = MergeSortStdMerge},
+        {.name = "Bottom-Up MergeSort", .function = BottomUpMergeSort},
         {.name = "std::sort", .function = StdSort},
         {.name = "std::stable_sort", .function = StdStableSort},
         {.name = "std::sort_heap", .function = StdSortHeap},
