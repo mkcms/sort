@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 
-include(CheckCXXCompilerFlag)
+project(sort)
 
-project(unnamed)
+include(CheckCXXCompilerFlag)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -16,7 +16,7 @@ find_package(
 )
 
 qt_add_executable(
-  unnamed
+  sort
   src/Algorithms.cpp
   src/Graphics.cpp
   src/MainWindow.cpp
@@ -26,22 +26,22 @@ qt_add_executable(
   src/main.cpp
 )
 
-target_link_libraries(unnamed PUBLIC Qt::Widgets)
+target_link_libraries(sort PUBLIC Qt::Widgets)
 
-target_include_directories(unnamed PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
+target_include_directories(sort PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 check_cxx_compiler_flag("-Wall" FLAG_WALL_SUPPORTED)
 check_cxx_compiler_flag("-Werror" FLAG_WERROR_SUPPORTED)
 check_cxx_compiler_flag("-Wextra" FLAG_WEXTRA_SUPPORTED)
 
 if("${FLAG_WALL_SUPPORTED}" EQUAL "1")
-  target_compile_options(unnamed PUBLIC "-Wall")
+  target_compile_options(sort PUBLIC "-Wall")
 endif()
 
 if("${FLAG_WERROR_SUPPORTED}" EQUAL "1")
-  target_compile_options(unnamed PUBLIC "-Werror")
+  target_compile_options(sort PUBLIC "-Werror")
 endif()
 
 if("${FLAG_WERROR_SUPPORTED}" EQUAL "1")
-  target_compile_options(unnamed PUBLIC "-Wextra")
+  target_compile_options(sort PUBLIC "-Wextra")
 endif()

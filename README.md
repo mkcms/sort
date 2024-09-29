@@ -5,7 +5,7 @@ An exercise project, sorting visualizer in Qt.
 ## Building & running ##
 
 ``` shell
-cmake -B build && cmake --build build && ./build/unnamed
+cmake -B build && cmake --build build && ./build/sort
 ```
 
 ## License ##
