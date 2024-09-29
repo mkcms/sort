@@ -66,7 +66,6 @@ class SortItem {
 
   private:
     static thread_local SortItemCallbacks *callbacks;
-    static void withCallbacks(const std::function<void(SortItemCallbacks &)> &);
 
     int m_value = 0;
     QGraphicsItem *m_graphicsItem = nullptr;

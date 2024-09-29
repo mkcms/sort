@@ -9,16 +9,6 @@
 static SortItemCallbacks DefaultCallbacks;
 thread_local SortItemCallbacks *SortItem::callbacks = &DefaultCallbacks;
 
-void SortItem::withCallbacks(
-    const std::function<void(SortItemCallbacks &)> &func) {
-    auto saved = callbacks;
-    callbacks = &DefaultCallbacks;
-
-    QScopeGuard sg([&] { callbacks = saved; });
-
-    func(*saved);
-}
-
 SortItem::SortItem(int value) : m_value(value), m_graphicsItem(nullptr) {}
 
 // Copying does not copy item
@@ -27,9 +17,7 @@ SortItem::SortItem(const SortItem &other)
 
 SortItem &SortItem::operator=(const SortItem &rhs) {
     if (&rhs != this) {
-        withCallbacks([&](auto &callbacks) {
-            callbacks.onAssignment(*this, m_value, rhs.m_value, &rhs);
-        });
+        callbacks->onAssignment(*this, m_value, rhs.m_value, &rhs);
         m_value = rhs.m_value;
     }
     return *this;
@@ -37,18 +25,14 @@ SortItem &SortItem::operator=(const SortItem &rhs) {
 
 void SortItem::swap(SortItem &rhs) {
     if (&rhs != this) {
-        withCallbacks([&](auto &callbacks) {
-            callbacks.onAssignment(*this, m_value, rhs.m_value, &rhs);
-        });
-        withCallbacks([&](auto &callbacks) {
-            callbacks.onAssignment(rhs, rhs.m_value, m_value, this);
-        });
+        callbacks->onAssignment(*this, m_value, rhs.m_value, &rhs);
+        callbacks->onAssignment(rhs, rhs.m_value, m_value, this);
         std::swap(m_value, rhs.m_value);
     }
 }
 
 int SortItem::value() const {
-    withCallbacks([&](auto &callbacks) { callbacks.onAccess(*this); });
+    callbacks->onAccess(*this);
     return m_value;
 }
 
@@ -60,12 +44,12 @@ QGraphicsItem *SortItem::mutableGraphicsItem() const { return m_graphicsItem; }
 void SortItem::setGraphicsItem(QGraphicsItem *item) { m_graphicsItem = item; }
 
 std::strong_ordering SortItem::operator<=>(const SortItem &rhs) const {
-    withCallbacks([&](auto &callbacks) { callbacks.onComparison(*this, rhs); });
+    callbacks->onComparison(*this, rhs);
     return std::strong_order(m_value, rhs.m_value);
 }
 
 bool SortItem::operator==(const SortItem &rhs) const {
-    withCallbacks([&](auto &callbacks) { callbacks.onComparison(*this, rhs); });
+    callbacks->onComparison(*this, rhs);
     return m_value == rhs.m_value;
 }
 
