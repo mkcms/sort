@@ -35,6 +35,18 @@ SortItem &SortItem::operator=(const SortItem &rhs) {
     return *this;
 }
 
+void SortItem::swap(SortItem &rhs) {
+    if (&rhs != this) {
+        withCallbacks([&](auto &callbacks) {
+            callbacks.onAssignment(*this, m_value, rhs.m_value, &rhs);
+        });
+        withCallbacks([&](auto &callbacks) {
+            callbacks.onAssignment(rhs, rhs.m_value, m_value, this);
+        });
+        std::swap(m_value, rhs.m_value);
+    }
+}
+
 int SortItem::value() const {
     withCallbacks([&](auto &callbacks) { callbacks.onAccess(*this); });
     return m_value;
@@ -60,6 +72,10 @@ bool SortItem::operator==(const SortItem &rhs) const {
 void SortItem::setCallbacksForCurrentThread(SortItemCallbacks *cbs) {
     callbacks = cbs;
 }
+
+namespace std {
+void swap(SortItem &lhs, SortItem &rhs) { lhs.swap(rhs); }
+} // namespace std
 
 std::vector<SortItem> generateVector(int numItems, ArrayOrder order) {
     std::vector<SortItem> ret;

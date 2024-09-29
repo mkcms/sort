@@ -50,6 +50,7 @@ class SortItem {
     SortItem(const SortItem &);
 
     SortItem &operator=(const SortItem &);
+    void swap(SortItem &);
 
     int value() const;
 
@@ -70,6 +71,10 @@ class SortItem {
     int m_value = 0;
     QGraphicsItem *m_graphicsItem = nullptr;
 };
+
+namespace std {
+void swap(SortItem &, SortItem &);
+}
 
 std::vector<SortItem> generateVector(int numItems, ArrayOrder order);
 
