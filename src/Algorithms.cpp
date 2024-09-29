@@ -8,6 +8,10 @@ template <typename It> static void merge(const It, const It, const It);
 
 template <typename It> static void quickSortImpl(It begin, It end);
 
+namespace Wiki {
+void Sort(std::vector<SortItem> &vec);
+}
+
 void QuickSort(std::vector<SortItem> &vec) {
     quickSortImpl(vec.begin(), vec.end());
 }
@@ -225,6 +229,7 @@ const QVector<Algorithm> &GetAlgorithms() {
          .function = MergeSortStdInplaceMerge},
         {.name = "MergeSort (std::merge)", .function = MergeSortStdMerge},
         {.name = "Bottom-Up MergeSort", .function = BottomUpMergeSort},
+        {.name = "WikiSort", .function = Wiki::Sort},
         {.name = "std::sort", .function = StdSort},
         {.name = "std::stable_sort", .function = StdStableSort},
         {.name = "std::sort_heap", .function = StdSortHeap},

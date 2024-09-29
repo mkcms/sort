@@ -23,6 +23,7 @@ qt_add_executable(
   src/MainWindow.ui
   src/Run.cpp
   src/SortItem.cpp
+  src/WikiSort.cpp
   src/main.cpp
 )
 
