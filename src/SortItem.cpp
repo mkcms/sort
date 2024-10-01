@@ -11,9 +11,8 @@ thread_local SortItemCallbacks *SortItem::callbacks = &DefaultCallbacks;
 
 SortItem::SortItem(int value) : m_value(value), m_graphicsItem(nullptr) {}
 
-// Copying does not copy item
 SortItem::SortItem(const SortItem &other)
-    : m_value(other.m_value), m_graphicsItem(nullptr) {}
+    : m_value(other.m_value), m_graphicsItem(other.m_graphicsItem) {}
 
 SortItem &SortItem::operator=(const SortItem &rhs) {
     if (&rhs != this) {
