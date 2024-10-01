@@ -76,7 +76,8 @@ Run::Run(std::vector<SortItem> &vec, std::chrono::microseconds delay,
          QObject *parent)
     : QObject(parent), m_vector(vec), m_state(State::NotStarted), m_timer(-1),
       m_callbacks(nullptr), m_thread(nullptr),
-      shared{{}, false, false, delay, {static_cast<int>(vec.size())}, Stats{}} {}
+      shared{{}, false, false, delay, {static_cast<int>(vec.size())}, Stats{}} {
+}
 
 Run::~Run() {
     if (m_state != State::Finished && m_state != State::NotStarted) {
@@ -202,15 +203,16 @@ void Run::maybeDrainChanges(bool force) {
 
     {
         QMutexLocker<QMutex> lock(&shared.mutex);
-        if (shared.sceneChanges.empty() && !force) {
-            return;
-        }
-        auto size = shared.sceneChanges.numItemsInVector();
-        changes = std::move(shared.sceneChanges);
-        shared.sceneChanges = SceneChanges(size);
         stats = shared.stats;
+        if (!shared.sceneChanges.empty() || force) {
+            auto size = shared.sceneChanges.numItemsInVector();
+            changes = std::move(shared.sceneChanges);
+            shared.sceneChanges = SceneChanges(size);
+        }
     }
 
-    emit sceneChangesReady(*changes);
+    if (changes) {
+        emit sceneChangesReady(*changes);
+    }
     emit statsReady(stats);
 }
