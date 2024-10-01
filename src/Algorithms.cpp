@@ -2,6 +2,10 @@
 #include "SortItem.h"
 #include <algorithm>
 
+#ifdef HAVE_BOOST
+#include <boost/sort/sort.hpp>
+#endif
+
 template <typename It, typename MergeFn>
 static void mergeSortImpl(It begin, It end, MergeFn mergeFn);
 template <typename It> static void merge(const It, const It, const It);
@@ -64,6 +68,24 @@ void StdSortHeap(std::vector<SortItem> &vec) {
     std::make_heap(vec.begin(), vec.end());
     std::sort_heap(vec.begin(), vec.end());
 }
+
+#ifdef HAVE_BOOST
+void BoostPdqSort(std::vector<SortItem> &vec) {
+    boost::sort::pdqsort(vec.begin(), vec.end());
+}
+
+void BoostSampleSort(std::vector<SortItem> &vec) {
+    boost::sort::sample_sort(vec.begin(), vec.end());
+}
+
+void BoostSpinSort(std::vector<SortItem> &vec) {
+    boost::sort::spinsort(vec.begin(), vec.end());
+}
+
+void BoostFlatStableSort(std::vector<SortItem> &vec) {
+    boost::sort::flat_stable_sort(vec.begin(), vec.end());
+}
+#endif
 
 void ShellSort(std::vector<SortItem> &vec) {
     unsigned int gaps[] = {
@@ -233,6 +255,13 @@ const QVector<Algorithm> &GetAlgorithms() {
         {.name = "std::sort", .function = StdSort},
         {.name = "std::stable_sort", .function = StdStableSort},
         {.name = "std::sort_heap", .function = StdSortHeap},
+#ifdef HAVE_BOOST
+        {.name = "boost::sort::pdqsort", .function = BoostPdqSort},
+        {.name = "boost::sort::sample_sort", .function = BoostSampleSort},
+        {.name = "boost::sort::spinsort", .function = BoostSpinSort},
+        {.name = "boost::sort::flat_stable_sort",
+         .function = BoostFlatStableSort},
+#endif
         {.name = "ShellSort", .function = ShellSort},
         {.name = "InsertionSort", .function = InsertionSort},
         {.name = "SelectionSort", .function = SelectionSort},

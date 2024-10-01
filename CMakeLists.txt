@@ -15,6 +15,8 @@ find_package(
   REQUIRED
 )
 
+find_package(Boost)
+
 qt_add_executable(
   sort
   src/Algorithms.cpp
@@ -28,6 +30,11 @@ qt_add_executable(
 )
 
 target_link_libraries(sort PUBLIC Qt::Widgets)
+
+if(Boost_FOUND)
+  target_link_libraries(sort PUBLIC Boost::boost)
+  target_compile_definitions(sort PUBLIC -DHAVE_BOOST)
+endif()
 
 target_include_directories(sort PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
