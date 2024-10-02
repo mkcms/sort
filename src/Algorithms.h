@@ -12,5 +12,6 @@ struct Algorithm {
 };
 
 const QVector<Algorithm> &GetAlgorithms();
+void TestAlgorithms();
 
 #endif

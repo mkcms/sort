@@ -1,6 +1,7 @@
 #include "Algorithms.h"
 #include "SortItem.h"
 #include <algorithm>
+#include <set>
 
 #ifdef HAVE_BOOST
 #include <boost/sort/sort.hpp>
@@ -398,4 +399,57 @@ const QVector<Algorithm> &GetAlgorithms() {
     };
 
     return algorithms;
+}
+
+// Test stuff
+
+static std::vector<SortItem> generateVector(int size) {
+    std::vector<SortItem> items;
+    for (int i = 0; i < size; i++) {
+        items.emplace_back(i);
+    }
+    if (size > 1) {
+        do {
+            std::shuffle(items.begin(), items.end(), std::random_device());
+        } while (std::is_sorted(items.begin(), items.end()));
+    }
+    return items;
+}
+
+static bool check(const Algorithm &algorithm, int size) {
+
+    fprintf(stderr, "Checking algorithm '%s' with %d items...",
+            algorithm.name.toStdString().c_str(), size);
+
+    std::vector<SortItem> items = generateVector(size);
+    const std::set<SortItem> beforeSet(items.begin(), items.end());
+
+    if (items.size() > 1) {
+        assert(!std::is_sorted(items.begin(), items.end()));
+    }
+
+    algorithm.function(items);
+
+    assert(std::is_sorted(items.begin(), items.end()));
+
+    const std::set<SortItem> afterSet(items.begin(), items.end());
+
+    assert(beforeSet == afterSet);
+
+    fprintf(stderr, "ok\n");
+
+    return true;
+}
+
+void TestAlgorithms() {
+    for (const auto &algo : GetAlgorithms()) {
+        // check(algo, 0);
+        check(algo, 1);
+        check(algo, 2);
+        check(algo, 10);
+        check(algo, 17);
+        check(algo, 25);
+        check(algo, 100);
+        check(algo, 1000);
+    }
 }
