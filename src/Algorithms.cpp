@@ -12,6 +12,16 @@ template <typename It> static void merge(const It, const It, const It);
 
 template <typename It> static void quickSortImpl(It begin, It end);
 
+template <typename It>
+static void RadixSortMSDImpl(std::vector<int>::iterator beginBucket,
+                             std::vector<int>::iterator endBucket, It out,
+                             int digit, const int maxDigit,
+                             const int numBuckets);
+template <typename It>
+static void RadixSortLSDImpl(std::vector<int>::iterator beginBucket,
+                             std::vector<int>::iterator endBucket, It out,
+                             int digit, const int maxDigit,
+                             const int numBuckets);
 namespace Wiki {
 void Sort(std::vector<SortItem> &vec);
 }
@@ -161,6 +171,28 @@ void CocktailSort(std::vector<SortItem> &vec) {
     } while (swapped);
 }
 
+void RadixSortMSD(std::vector<SortItem> &vec) {
+    constexpr int numBuckets = 10;
+
+    std::vector<int> values(vec.begin(), vec.end());
+    const int max = *std::max_element(vec.begin(), vec.end());
+    const int maxDigit = 1 + std::log(max) / std::log(numBuckets);
+
+    RadixSortMSDImpl(values.begin(), values.end(), vec.begin(), 0, maxDigit,
+                     numBuckets);
+}
+
+void RadixSortLSD(std::vector<SortItem> &vec) {
+    constexpr int numBuckets = 10;
+
+    std::vector<int> values(vec.begin(), vec.end());
+    const int max = *std::max_element(vec.begin(), vec.end());
+    const int maxDigit = 1 + std::log(max) / std::log(numBuckets);
+
+    RadixSortLSDImpl(values.begin(), values.end(), vec.begin(), 0, maxDigit,
+                     numBuckets);
+}
+
 template <typename It> static auto &choosePivot(It begin, It end) {
     auto min = begin, mid = begin + (end - begin) / 2, max = end - 1;
 
@@ -243,6 +275,100 @@ void mergeSortImpl(It begin, It end, MergeFn mergeFn) {
     mergeFn(begin, half, end);
 }
 
+static int LSDigit(int val, int digit, const int base) {
+    while (digit) {
+        val /= base;
+        digit--;
+    }
+    return val % base;
+}
+
+// Simply copies bucket contents, in order, to the provided output
+// iterator, but does so in a visually appealing way.  Buckets are
+// written out "in parallel": first, index 0 will be written from each
+// bucket to it's correct place, then index 1, etc.
+template <typename It>
+static void concatenateBuckets(const std::vector<std::vector<int>> &buckets,
+                               It out) {
+    std::vector<int> indices(buckets.size());
+    unsigned int maxBucketSize = buckets[0].size();
+    indices[0] = 0;
+    for (unsigned int b = 1; b < buckets.size(); ++b) {
+        unsigned int bsize = buckets[b].size();
+        if (bsize > maxBucketSize) {
+            maxBucketSize = bsize;
+        }
+        indices[b] = indices[b - 1] + buckets[b - 1].size();
+    }
+
+    unsigned int index = 0;
+    while (index < maxBucketSize) {
+        for (unsigned int j = 0; j < buckets.size(); ++j) {
+            auto &bucket = buckets[j];
+            if (bucket.size() <= index) {
+                continue;
+            }
+
+            *(out + indices[j] + index) = bucket[index];
+        }
+        ++index;
+    }
+}
+
+template <typename It>
+static void RadixSortMSDImpl(std::vector<int>::iterator beginBucket,
+                             std::vector<int>::iterator endBucket, It out,
+                             int digit, const int maxDigit,
+                             const int numBuckets) {
+    if ((endBucket - beginBucket) <= 1 || digit > maxDigit) {
+        return;
+    }
+
+    using Bucket = std::vector<int>;
+    std::vector<Bucket> buckets(numBuckets);
+
+    for (auto it = beginBucket; it != endBucket; it++) {
+        const int val = *it;
+        const int bucket = LSDigit(val, maxDigit - digit, numBuckets);
+        buckets[bucket].push_back(val);
+    }
+
+    concatenateBuckets(buckets, out);
+    digit++;
+
+    for (auto &bucket : buckets) {
+        RadixSortMSDImpl(bucket.begin(), bucket.end(), out, digit, maxDigit,
+                         numBuckets);
+        out += bucket.size();
+    }
+}
+
+template <typename It>
+static void RadixSortLSDImpl(std::vector<int>::iterator beginBucket,
+                             std::vector<int>::iterator endBucket, It out,
+                             int digit, const int maxDigit,
+                             const int numBuckets) {
+    const auto size = endBucket - beginBucket;
+    if (size <= 1 || digit > maxDigit) {
+        return;
+    }
+
+    using Bucket = std::vector<int>;
+    std::vector<Bucket> buckets(numBuckets);
+
+    for (auto it = beginBucket; it != endBucket; it++) {
+        const int val = *it;
+        const int bucket = LSDigit(val, digit, numBuckets);
+        buckets[bucket].push_back(val);
+    }
+
+    concatenateBuckets(buckets, out);
+    std::copy(out, out + size, beginBucket);
+    digit++;
+
+    RadixSortLSDImpl(beginBucket, endBucket, out, digit, maxDigit, numBuckets);
+}
+
 const QVector<Algorithm> &GetAlgorithms() {
     static const QVector<Algorithm> algorithms = {
         {.name = "QuickSort", .function = QuickSort},
@@ -267,6 +393,8 @@ const QVector<Algorithm> &GetAlgorithms() {
         {.name = "SelectionSort", .function = SelectionSort},
         {.name = "BubbleSort", .function = BubbleSort},
         {.name = "CocktailSort", .function = CocktailSort},
+        {.name = "RadixSort (MSD)", .function = RadixSortMSD},
+        {.name = "RadixSort (LSD)", .function = RadixSortLSD},
     };
 
     return algorithms;

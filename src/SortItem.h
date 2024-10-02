@@ -53,6 +53,7 @@ class SortItem {
     void swap(SortItem &);
 
     int value() const;
+    operator int() const;
 
     QGraphicsItem *graphicsItem();
     const QGraphicsItem *graphicsItem() const;

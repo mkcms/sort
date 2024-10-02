@@ -35,6 +35,8 @@ int SortItem::value() const {
     return m_value;
 }
 
+SortItem::operator int() const { return value(); }
+
 QGraphicsItem *SortItem::graphicsItem() { return m_graphicsItem; }
 
 const QGraphicsItem *SortItem::graphicsItem() const { return m_graphicsItem; }
