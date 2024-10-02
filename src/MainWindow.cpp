@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
         item->setSelected(true);
     }
 
+    connect(m_ui->actionAntialiasing, SIGNAL(toggled(bool)), m_ui->graphicsView,
+            SLOT(setAntialiasingEnabled(bool)));
     connect(m_ui->spinBoxNumItems, SIGNAL(valueChanged(int)), this,
             SLOT(onNumItemsChanged(int)));
     connect(m_ui->listWidgetAlgorithms,
@@ -47,6 +49,8 @@ MainWindow::MainWindow(QWidget *parent)
             SLOT(onDelayChanged(int)));
 
     m_ui->graphicsView->setScene(new Scene);
+    m_ui->graphicsView->setAntialiasingEnabled(
+        m_ui->actionAntialiasing->isEnabled());
 
     onNumItemsChanged(m_ui->spinBoxNumItems->value());
     m_ui->listWidgetAlgorithms->setCurrentItem(

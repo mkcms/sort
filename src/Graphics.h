@@ -19,6 +19,9 @@ class GraphicsView : public QGraphicsView {
     void resetZoom();
     void fitItemsInView();
 
+  public slots:
+    void setAntialiasingEnabled(bool enabled);
+
   protected:
     void resizeEvent(QResizeEvent *ev) override;
     void wheelEvent(QWheelEvent *ev) override;

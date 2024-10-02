@@ -32,6 +32,10 @@ void GraphicsView::fitItemsInView() {
     scene()->setSceneRect(boundingRect);
 }
 
+void GraphicsView::setAntialiasingEnabled(bool enabled) {
+    setRenderHint(QPainter::Antialiasing, enabled);
+}
+
 void GraphicsView::resizeEvent(QResizeEvent *event) {
     fitItemsInView();
     QGraphicsView::resizeEvent(event);
