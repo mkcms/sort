@@ -25,9 +25,7 @@ class MainWindow : public QMainWindow {
     void onOrderSelected(QListWidgetItem *);
     void onAlgorithmSelected(QListWidgetItem *);
     void onDelayChanged(int);
-    void onRunClicked();
-    void onPauseClicked();
-    void onResumeClicked();
+    void onRunPauseResumeClicked();
     void onResetClicked();
 
     void onRunStateChanged(Run::State);

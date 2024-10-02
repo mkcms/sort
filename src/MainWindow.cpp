@@ -36,11 +36,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->listWidgetItemOrder,
             SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
             this, SLOT(onOrderSelected(QListWidgetItem *)));
-    connect(m_ui->pushButtonRun, SIGNAL(clicked()), this, SLOT(onRunClicked()));
-    connect(m_ui->pushButtonPause, SIGNAL(clicked()), this,
-            SLOT(onPauseClicked()));
-    connect(m_ui->pushButtonResume, SIGNAL(clicked()), this,
-            SLOT(onResumeClicked()));
+    connect(m_ui->pushButtonRunPauseResume, SIGNAL(clicked()), this,
+            SLOT(onRunPauseResumeClicked()));
     connect(m_ui->pushButtonReset, SIGNAL(clicked()), this,
             SLOT(onResetClicked()));
     connect(m_ui->listWidgetItemOrder,
@@ -116,40 +113,39 @@ void MainWindow::onDelayChanged(int us) {
     m_run->setDelay(m_params.delay);
 }
 
-void MainWindow::onRunClicked() {
-    if (m_run->state() == Run::State::Finished || m_params.needsRegenerate) {
-        setup();
+void MainWindow::onRunPauseResumeClicked() {
+    switch (m_run->state()) {
+    case Run::State::Finished:
+    case Run::State::NotStarted:
+        if (m_params.needsRegenerate) {
+            setup();
+        }
+        m_run->start(*m_params.algorithm);
+        break;
+    case Run::State::Paused:
+        m_run->resume();
+        break;
+    case Run::State::Running:
+        m_run->pause();
+        break;
     }
-    m_run->start(*m_params.algorithm);
 }
-
-void MainWindow::onPauseClicked() { m_run->pause(); }
-
-void MainWindow::onResumeClicked() { m_run->resume(); }
 
 void MainWindow::onResetClicked() { setup(); }
 
 void MainWindow::onRunStateChanged(Run::State state) {
     switch (state) {
+    case Run::State::Finished:
+        m_params.needsRegenerate = true;
+        [[fallthrough]];
     case Run::State::NotStarted:
-        m_ui->pushButtonRun->show();
-        m_ui->pushButtonPause->hide();
-        m_ui->pushButtonResume->hide();
+        m_ui->pushButtonRunPauseResume->setText("Run");
         break;
     case Run::State::Running:
-        m_ui->pushButtonRun->hide();
-        m_ui->pushButtonPause->show();
-        m_ui->pushButtonResume->hide();
+        m_ui->pushButtonRunPauseResume->setText("Pause");
         break;
     case Run::State::Paused:
-        m_ui->pushButtonRun->hide();
-        m_ui->pushButtonPause->hide();
-        m_ui->pushButtonResume->show();
-        break;
-    case Run::State::Finished:
-        m_ui->pushButtonRun->show();
-        m_ui->pushButtonPause->hide();
-        m_ui->pushButtonResume->hide();
+        m_ui->pushButtonRunPauseResume->setText("Resume");
         break;
     }
 }
