@@ -16,10 +16,15 @@ class GraphicsView : public QGraphicsView {
   public:
     GraphicsView(QWidget *parent = nullptr);
 
+    void resetZoom();
     void fitItemsInView();
 
   protected:
     void resizeEvent(QResizeEvent *ev) override;
+    void wheelEvent(QWheelEvent *ev) override;
+
+  private:
+    float m_zoomFactor = 1.0;
 };
 
 class SceneChanges {

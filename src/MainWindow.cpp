@@ -80,6 +80,7 @@ void MainWindow::setup() {
     scene->reset(m_vector);
 
     m_ui->graphicsView->fitItemsInView();
+    m_ui->graphicsView->resetZoom();
 
     m_run = new Run(m_vector, m_params.delay, this);
     connect(m_run, SIGNAL(stateChanged(Run::State)), this,

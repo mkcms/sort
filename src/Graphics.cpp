@@ -2,7 +2,7 @@
 #include <QGraphicsItem>
 #include <QGraphicsView>
 #include <QPen>
-#include <qgraphicsitem.h>
+#include <QWheelEvent>
 
 static constexpr int ITEM_WIDTH = 100;
 static constexpr int ITEM_HEIGHT_MULT = 100;
@@ -15,15 +15,61 @@ static const auto ItemPen = QPen(QBrush(Qt::black), ITEM_BORDER_WIDTH);
 static const auto Background = QBrush(Qt::darkGray);
 
 GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent) {
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+}
+
+void GraphicsView::resetZoom() {
+    m_zoomFactor = 1.0;
+    fitItemsInView();
 }
 
 void GraphicsView::fitItemsInView() {
-    fitInView(scene()->itemsBoundingRect(), Qt::IgnoreAspectRatio);
+    QRectF boundingRect = scene()->itemsBoundingRect();
+    QRectF newRect = boundingRect;
+    newRect.setWidth(boundingRect.width() / m_zoomFactor);
+    fitInView(newRect, Qt::IgnoreAspectRatio);
+    scene()->setSceneRect(boundingRect);
 }
 
-void GraphicsView::resizeEvent(QResizeEvent *) { fitItemsInView(); }
+void GraphicsView::resizeEvent(QResizeEvent *event) {
+    fitItemsInView();
+    QGraphicsView::resizeEvent(event);
+}
+
+void GraphicsView::wheelEvent(QWheelEvent *ev) {
+    const double zoomIn = 1.03, zoomOut = 1 / zoomIn, maxZoomIn = 4.0;
+
+    if (ev->angleDelta().y() == 0) {
+        return;
+    }
+
+    double zoom, newScale;
+    if (ev->angleDelta().y() > 0)
+        zoom = zoomIn;
+    else
+        zoom = zoomOut;
+    newScale = m_zoomFactor * zoom;
+
+    if (newScale <= 1) {
+        m_zoomFactor = 1;
+        fitItemsInView();
+        setDragMode(QGraphicsView::NoDrag);
+    } else if (newScale >= maxZoomIn) {
+        m_zoomFactor = maxZoomIn;
+    } else {
+        QPointF pos = mapToScene(ev->position().toPoint()), pos2, d;
+
+        scale(zoom, 1.0);
+        pos2 = mapToScene(pos.toPoint());
+
+        d = pos - pos2;
+        translate(d.x(), 0);
+
+        m_zoomFactor = newScale;
+        setDragMode(QGraphicsView::ScrollHandDrag);
+    }
+}
 
 SceneChanges::SceneChanges(int numItemsInVector)
     : m_numItemsInVector(numItemsInVector) {}
