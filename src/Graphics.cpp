@@ -17,6 +17,7 @@ static const auto Background = QBrush(Qt::darkGray);
 GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent) {
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    setViewportUpdateMode(ViewportUpdateMode::BoundingRectViewportUpdate);
 }
 
 void GraphicsView::resetZoom() {
