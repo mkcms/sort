@@ -43,6 +43,7 @@ class Run::Callbacks : public SortItemCallbacks {
         if (item.graphicsItem()) {
             m_run.shared.sceneChanges.addAssignment(item.mutableGraphicsItem(),
                                                     newValue);
+            m_run.shared.stats.accesses++;
         }
     }
 
